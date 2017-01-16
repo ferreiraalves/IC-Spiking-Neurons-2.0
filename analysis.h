@@ -29,7 +29,7 @@
 
   }Neuron;
 
-  void initialize ();
+  void initialize (Neuron * );
 
   void printMatrix();
 

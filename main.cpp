@@ -159,7 +159,7 @@ float evaluate(int n, float inputa, float inputb){
 
   int m=0;
   Neuron network [NETSIZE]; //declaracao da rede auxiliar
-  initize(network);         //inicializa a rede normalmente
+  initialize(network);         //inicializa a rede normalmente
 
   for (int i=0; i<NETSIZE; i++){      //subscreve os valores da matriz S
     for(int j=0; j<NETSIZE; j++){     //com os valores geneticos
