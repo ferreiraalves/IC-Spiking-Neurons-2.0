@@ -4,7 +4,7 @@
 #include <time.h>
 #include <string.h>
 
-#include "analysis.h"
+#include "tads.h"
 
 #define POP 30           //popn size
 #define LEN NETSIZE*NETSIZE           //genotypes
@@ -24,9 +24,6 @@ float gene[POP][LEN];    //global array containing the binary genotypes of popn
 
 float target1= 80;    //frequencia desejada para i1<i2
 float target2= 40;    //frequencia desejada para i1>i2
-float imin = 3;       //valor minimo de Teste
-float imax = 33;      //valor maximo de teste
-float istep = 1;      //especo entre as entradas de teste.
 
 
 void init_pop();
@@ -47,15 +44,14 @@ int main(int argc, char const *argv[]) {
 
   	int count=0;
 
-  	for (i=imin;i<=imax;i+=istep){
-  		for(int j=imin;j<=imax;j+=istep){
+
+  	for (i=IMIN;i<=IMAX;i+=STEP){
+  		for(int j=IMIN;j<=IMAX;j+=STEP){
   			if(i!=j)
   				count++;
   		}
   	}
-
-  	printf("Testes: %d\n",count);
-
+    printf("TESTES: %d\n",count);
 
     //inicia o fitness da população
   	for (int k=0;k<POP;k++)
@@ -66,36 +62,40 @@ int main(int argc, char const *argv[]) {
 
   	init_pop();//inicializa a população
 
-
-
   	FILE * file;
   	file = fopen("logGA.txt","w");//Armazena evolução do GA
   	t=0;
   	//Escolhe os dois primeiros robôs
   	x=POP*drand48();
   	y=POP*drand48();
+
+
+
   	for (t=start;t<end+start;t++){
     float i1, i2;
-  		//Avalia os 2 robs
+  		//Avalia os 2 robos
   		if(fitness[x]==0){
-  			for (i1=imin;i1<=imax;i1+=istep){
-  				for(i2=imin;i2<=imax;i2+=istep){
+  			for (i1=IMIN;i1<=IMAX;i1+=STEP){
+  				for(i2=IMIN;i2<=IMAX;i2+=STEP){
   					if(i1!=i2){
+
   							fitness[x]+=evaluate(x,i1,i2)/count;
   					}
   				}
   			}
   		}
+
   		if(fitness[y]==0){
-  			for (i1=imin;i1<imax;i1+=istep){
-  				for(i2=imin;i2<imax;i2+=istep){
+  			for (i1=IMIN;i1<IMAX;i1+=STEP){
+  				for(i2=IMIN;i2<IMAX;i2+=STEP){
   					if(i1!=i2){
   							fitness[y]+=evaluate(y,i1,i2)/count;
   					}
   				}
   			}
   		}
-
+      if (t%5==0)
+        printf(".");fflush(stdout);
 
   		//Verifica qual foi o vencedor
   		if (fitness[x] > fitness[y])  {W=x; L=y;}
@@ -135,7 +135,7 @@ int main(int argc, char const *argv[]) {
   				fitpopulation+=fitness[k];
   			}
   			fprintf(file,"%6d %2d %.2f %.2f\n",t,best,fitness[best],fitpopulation/POP);
-  			printf("%6d %2d %5.2f %5.2f %5.2f\n",t,best,fitness[best],fitpopulation/POP,fitness[W]);
+  			printf("\n%6d %2d %5.2f %5.2f %5.2f\n",t,best,fitness[best],fitpopulation/POP,fitness[W]);
   			write_pop(best);
   		}
   	}
@@ -155,9 +155,12 @@ int main(int argc, char const *argv[]) {
 }
 
 
+
 float evaluate(int n, float inputa, float inputb){
 
   int m=0;
+  float eval;
+
   Neuron network [NETSIZE]; //declaracao da rede auxiliar
   initialize(network);         //inicializa a rede normalmente
 
@@ -168,7 +171,15 @@ float evaluate(int n, float inputa, float inputb){
     }
   }
 
-
+  eval=execute(network, inputa, inputb);
+  if (eval==0){ //caso seja 0;
+    return 0;
+  }
+  else if(inputa<inputb){                                     //avalia para casos onde i1 < i2
+    return 100-fabs(target1-eval); //retorna 100 - a "distancia" entre a frequencia ideal e a obtida
+  } else if(inputa>inputb){                                  //avalia para casos onde i1 > i2
+    return 100-fabs(target2-eval); //ou seja, caso a frequencia desejada seja alcancada retorna 100
+  }
 
 }
 
@@ -193,7 +204,7 @@ void init_pop() {
       j=0;
       for(int m=0; m<NETSIZE;m++){        //"Gambiarra" para garantir o neuronio 0
         for(int n=0; n<NETSIZE; n++){     //desconectado assim com a diagonal da matriz R
-          if(m==0||n==0|| m==n){
+          if(m==0|| m==n){
             gene[i][j]=0;
           }
           j++;
