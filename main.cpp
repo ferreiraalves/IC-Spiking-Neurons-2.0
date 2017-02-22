@@ -22,8 +22,8 @@ int  start;		//start value for logGA (column "iteration")
 float fitness[POP];      //Fitness of each individual
 float gene[POP][LEN];    //global array containing the binary genotypes of popn
 
-float target1= 80;    //frequencia desejada para i1<i2
-float target2= 40;    //frequencia desejada para i1>i2
+float target1= 20;    //frequencia desejada para i1<i2
+float target2= 10;    //frequencia desejada para i1>i2
 
 
 void init_pop();
@@ -69,8 +69,6 @@ int main(int argc, char const *argv[]) {
   	x=POP*drand48();
   	y=POP*drand48();
 
-
-
   	for (t=start;t<end+start;t++){
     float i1, i2;
   		//Avalia os 2 robos
@@ -78,13 +76,11 @@ int main(int argc, char const *argv[]) {
   			for (i1=IMIN;i1<=IMAX;i1+=STEP){
   				for(i2=IMIN;i2<=IMAX;i2+=STEP){
   					if(i1!=i2){
-
   							fitness[x]+=evaluate(x,i1,i2)/count;
   					}
   				}
   			}
   		}
-
   		if(fitness[y]==0){
   			for (i1=IMIN;i1<IMAX;i1+=STEP){
   				for(i2=IMIN;i2<IMAX;i2+=STEP){
@@ -160,10 +156,8 @@ float evaluate(int n, float inputa, float inputb){
 
   int m=0;
   float eval;
-
   Neuron network [NETSIZE]; //declaracao da rede auxiliar
   initialize(network);         //inicializa a rede normalmente
-
   for (int i=0; i<NETSIZE; i++){      //subscreve os valores da matriz S
     for(int j=0; j<NETSIZE; j++){     //com os valores geneticos
       network[i].S[j]= gene[n][m];
@@ -171,13 +165,20 @@ float evaluate(int n, float inputa, float inputb){
     }
   }
 
-  eval=execute(network, inputa, inputb);
+  eval=execute(network, inputa, inputb,0);
+  
   if (eval==0){ //caso seja 0;
     return 0;
   }
   else if(inputa<inputb){                                     //avalia para casos onde i1 < i2
+    if(eval>(target1+target2)/2){                             //se erro
+      return 100-(fabs(target1-eval)*3);                      //penaliza
+    }
     return 100-fabs(target1-eval); //retorna 100 - a "distancia" entre a frequencia ideal e a obtida
-  } else if(inputa>inputb){                                  //avalia para casos onde i1 > i2
+  } else if(inputa>inputb){                                   //avalia para casos onde i1 > i2
+    if(eval<(target1+target2)/2){
+      return 100-(fabs(target2-eval)*3);                        //penaliza
+    }
     return 100-fabs(target2-eval); //ou seja, caso a frequencia desejada seja alcancada retorna 100
   }
 

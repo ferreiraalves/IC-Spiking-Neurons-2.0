@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-
 #include "tads.h"
 
 
@@ -35,7 +34,7 @@ int main(int argc, char const *argv[]) {
     printf("Digite o valor da entrada 2:\n");
     scanf("%f",&aux2);
     printf("\n");
-    printf("Frequencia: %.3f\n",execute(network,aux1,aux2));
+    printf("Frequencia: %.3f\n",execute(network,aux1,aux2,1));
   }else if(menu==2){
 
     FILE * ft = fopen("frequencyTable.txt","w");        //OPCAO 2
@@ -46,7 +45,7 @@ int main(int argc, char const *argv[]) {
         if(i==j){
           fprintf(ft, "XXXX ");
         }else{
-          fprintf(ft, "%.2f ",execute(network,i,j));
+          fprintf(ft, "%02.2f ",execute(network,i,j,0));
         }
       }
       printf(".");fflush(stdout);

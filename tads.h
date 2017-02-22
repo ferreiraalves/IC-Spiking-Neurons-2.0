@@ -2,18 +2,18 @@
 #define _TADS_H_
 
 
-#define NETSIZE 20      //tamanho da Rede
+#define NETSIZE 10     //tamanho da Rede
 #define TTOTAL 1000      //Numero de interacoes da simulacao
 #define T1 50           //Tempo de ativacao da entrada 1
 #define T2 200          //Tempo de ativacao da entrada 2
 #define T3 300          //Tempo de inicio da analise da Frequencia
 
-#define IMIN 10        //Maximos e minimos para valores de entrada
-#define IMAX 100       //Usados somente na avaliacao automatica
-#define STEP 10        //Step dado entre os avaliacoes
+#define IMIN 3        //Maximos e minimos para valores de entrada
+#define IMAX 33       //Usados somente na avaliacao automatica
+#define STEP 2       //Step dado entre os avaliacoes
 
 #define SCALE 30        //escalar dos pesos sinapticos
-
+#define tcond 5         //escalar da condutancia
 //ESTRUTURAS
 
 typedef struct Neuron {
@@ -40,7 +40,7 @@ void printMatrix(Neuron * network);
 
 void printTeste(Neuron * network);
 
-float execute (Neuron * network, float input1, float input2);
+float execute (Neuron * network, float input1, float input2, int genOut);
 
 
 #endif
